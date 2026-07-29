@@ -6,15 +6,10 @@
 
 ## 流程模式
 
-默认使用完整流程。显式调用 `$workflow-light` 或 `$workflow-full` 时切换当前对话的持续模式；同一消息携带任务时，切换后执行任务且后续继续使用该模式。`[模式：轻量]` 与 `[模式：完整]` 提供相同的持续切换备用入口。单独使用模式 Skill 或标签时只确认结果，不执行任务。
-
-不支持单次任务临时覆盖；`[轻量]` 与 `[完整]` 不视为模式指令。最新显式切换优先；新对话恢复完整。模式不明确时按完整处理，不根据语气猜测。
-
-任务中途切换只影响未完成步骤，不撤销已有修改、验证或授权。
+默认使用 `$workflow-full`。
 
 ## 按需规则
 
-- 出现流程模式 Skill 或标签、持续轻量模式生效，或任务需要开发流程时，须先读取 `~/.codex/rules/workflow-modes.md`。
 - 所有任务开始时先初判能否拆分；任何 Superpowers Skill 生成或更新设计、实施计划、任务清单或失败分组后，以及选择执行 Skill 或派发 Agent 前，须重新判断。Standard/Complex 进入执行阶段前必须读取 `~/.codex/rules/parallel-execution.md`；其他任务确认包含两个以上独立问题时也须读取。
 - repo root 存在 `.codegraph/`，且任务涉及理解或定位 code 时，须先读取 `~/.codex/rules/codegraph-navigation.md`。
 - 涉及 Cocos、Unity、scene、节点、GameObject、Prefab、material、asset、资源或项目设置时，须先读取 `~/.codex/rules/editor-mcp-checkpoint.md`。

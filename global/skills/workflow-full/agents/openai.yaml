@@ -4,4 +4,4 @@ interface:
   default_prompt: "使用 $workflow-full 将当前对话持续切换为完整流程。"
 
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true

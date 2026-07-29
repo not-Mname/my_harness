@@ -11,20 +11,23 @@
 ## Global Constraints
 
 - 只处理流程模式内容。
-- 保留 `global/AGENTS.md` 中除“流程模式”章节外的全部内容。
+- 保留 `global/AGENTS.md` 中除“流程模式”章节和读取 `~/.codex/rules/workflow-modes.md` 的失效按需规则外的全部内容。
 - 保留 `global/rules/codegraph-navigation.md`、`editor-mcp-checkpoint.md`、`git-development.md` 与 `parallel-execution.md`。
 - 不修改 `global/root/`。
 - 不同步到 `~/.codex` 或 `~/.agents`。
 - 不覆盖或提交用户已有的 `global/rules/git-development.md` 修改。
-- 不修改两个 `agents/openai.yaml` 文件。
+- 将 `workflow-full/agents/openai.yaml` 的 `allow_implicit_invocation` 设置为 `true`；不修改 `workflow-light/agents/openai.yaml`。
 
 ---
 
 ### Task 1: 整合流程模式规则
 
 **Files:**
+- Modify: `docs/superpowers/specs/2026-07-29-workflow-mode-integration-design.md`
+- Modify: `docs/superpowers/plans/2026-07-29-workflow-mode-integration.md`
 - Modify: `global/AGENTS.md`
 - Modify: `global/skills/workflow-full/SKILL.md`
+- Modify: `global/skills/workflow-full/agents/openai.yaml`
 - Modify: `global/skills/workflow-light/SKILL.md`
 - Delete: `global/rules/workflow-modes.md`
 - Preserve: `global/rules/codegraph-navigation.md`
@@ -50,7 +53,7 @@ test "$(sed -n "/^## 流程模式$/,/^## 按需规则$/p" global/AGENTS.md)" = "
 默认使用 \`\$workflow-full\`。
 
 ## 按需规则"
-! rg -n "workflow-modes\.md" global/skills/workflow-full/SKILL.md global/skills/workflow-light/SKILL.md
+! rg -n "workflow-modes\.md" global -g "*.md"
 '
 ```
 
@@ -68,6 +71,14 @@ Expected: FAIL，因为 `global/rules/workflow-modes.md` 仍存在，且两个 S
 
 不得修改该文件的其他章节。
 
+同时删除“按需规则”中的以下失效条目：
+
+```markdown
+- 出现流程模式 Skill 或标签、持续轻量模式生效，或任务需要开发流程时，须先读取 `~/.codex/rules/workflow-modes.md`。
+```
+
+不得修改该文件的其他内容。
+
 - [ ] **Step 3: 将完整流程规则写入 workflow-full**
 
 将 `global/skills/workflow-full/SKILL.md` 完整替换为：
@@ -75,7 +86,7 @@ Expected: FAIL，因为 `global/rules/workflow-modes.md` 仍存在，且两个 S
 ```markdown
 ---
 name: workflow-full
-description: Use when 用户显式调用 $workflow-full，要求将当前 Codex 对话持续切换为完整流程
+description: Use by default when a new Codex conversation starts in full mode, or when 用户显式调用 $workflow-full，要求将当前 Codex 对话持续切换为完整流程
 ---
 
 # 持续完整流程
@@ -89,7 +100,8 @@ description: Use when 用户显式调用 $workflow-full，要求将当前 Codex 
 3. 调用消息没有任务正文时，只确认“已切换为持续完整流程”，随后停止。
 4. 最新显式切换优先；任务中途切换只影响未完成步骤，不撤销已有修改、验证或授权。
 5. 不把本次调用解释为临时覆盖，不恢复调用前的模式；`[完整]` 与 `[轻量]` 不视为模式指令。
-6. 完整表示执行全部适用流程，不机械调用无关 Skill。
+6. 模式不明确时按完整处理，不根据语气猜测。
+7. 完整表示执行全部适用流程，不机械调用无关 Skill。
 
 ## 完整流程
 
@@ -133,6 +145,7 @@ description: Use when 用户显式调用 $workflow-light，要求将当前 Codex
 3. 调用消息没有任务正文时，只确认“已切换为持续轻量流程”，随后停止。
 4. 最新显式切换优先；任务中途切换只影响未完成步骤，不撤销已有修改、验证或授权。
 5. 不把本次调用解释为临时覆盖，不恢复调用前的模式；`[完整]` 与 `[轻量]` 不视为模式指令。
+6. 模式不明确时按完整处理，不根据语气猜测。
 
 ## 轻量流程
 
@@ -161,6 +174,17 @@ description: Use when 用户显式调用 $workflow-light，要求将当前 Codex
 
 - [ ] **Step 5: 删除共享流程模式文件**
 
+将 `global/skills/workflow-full/agents/openai.yaml` 中的策略修改为：
+
+```yaml
+policy:
+  allow_implicit_invocation: true
+```
+
+保持 `global/skills/workflow-light/agents/openai.yaml` 不变。
+
+然后删除共享流程模式文件。
+
 删除：
 
 ```text
@@ -180,13 +204,17 @@ test "$(sed -n "/^## 流程模式$/,/^## 按需规则$/p" global/AGENTS.md)" = "
 默认使用 \`\$workflow-full\`。
 
 ## 按需规则"
-! rg -n "workflow-modes\.md" global/skills/workflow-full/SKILL.md global/skills/workflow-light/SKILL.md
+! rg -n "workflow-modes\.md" global -g "*.md"
 rg -q "^## 完整流程$" global/skills/workflow-full/SKILL.md
 rg -q "^## 轻量流程$" global/skills/workflow-light/SKILL.md
 rg -q "^## 流程分级$" global/skills/workflow-full/SKILL.md
 rg -q "^## 流程分级$" global/skills/workflow-light/SKILL.md
 rg -q "^## 始终生效$" global/skills/workflow-full/SKILL.md
 rg -q "^## 始终生效$" global/skills/workflow-light/SKILL.md
+rg -q "模式不明确时按完整处理，不根据语气猜测" global/skills/workflow-full/SKILL.md
+rg -q "模式不明确时按完整处理，不根据语气猜测" global/skills/workflow-light/SKILL.md
+rg -q "allow_implicit_invocation: true" global/skills/workflow-full/agents/openai.yaml
+rg -q "allow_implicit_invocation: false" global/skills/workflow-light/agents/openai.yaml
 '
 ```
 
@@ -210,7 +238,7 @@ Run:
 ```bash
 shasum -a 256 global/rules/codegraph-navigation.md global/rules/editor-mcp-checkpoint.md global/rules/git-development.md global/rules/parallel-execution.md
 find global/root -type f -exec shasum -a 256 {} \; | sort
-git diff -- global/AGENTS.md global/skills/workflow-full/SKILL.md global/skills/workflow-light/SKILL.md global/rules/workflow-modes.md
+git diff -- docs/superpowers/specs/2026-07-29-workflow-mode-integration-design.md docs/superpowers/plans/2026-07-29-workflow-mode-integration.md global/AGENTS.md global/skills/workflow-full/SKILL.md global/skills/workflow-full/agents/openai.yaml global/skills/workflow-light/SKILL.md global/rules/workflow-modes.md
 git status --short
 ```
 
@@ -231,18 +259,18 @@ Expected root hashes:
 eca9d34b05b87b79e7b4c58695a204d1289c3b67d9739ac3fd245e08a3fc60c2  global/root/server/AGENTS.md
 ```
 
-Expected: diff 仅包含 3 个修改文件和 1 个删除文件；`git status --short` 还会显示用户已有的 ` M global/rules/git-development.md`，但该文件内容和上方基线哈希一致。
+Expected: diff 仅包含 6 个修改文件和 1 个删除文件；`git status --short` 还会显示用户已有的 ` M global/rules/git-development.md`，但该文件内容和上方基线哈希一致。
 
 - [ ] **Step 9: 精确暂存、复核并提交实现**
 
 Run:
 
 ```bash
-git add global/AGENTS.md global/skills/workflow-full/SKILL.md global/skills/workflow-light/SKILL.md global/rules/workflow-modes.md
+git add docs/superpowers/specs/2026-07-29-workflow-mode-integration-design.md docs/superpowers/plans/2026-07-29-workflow-mode-integration.md global/AGENTS.md global/skills/workflow-full/SKILL.md global/skills/workflow-full/agents/openai.yaml global/skills/workflow-light/SKILL.md global/rules/workflow-modes.md
 git diff --cached --check
 git diff --cached --stat
 git status --short
 git commit -m "整合流程模式规则"
 ```
 
-Expected: 暂存区只包含 3 个修改文件和 1 个删除文件；`global/rules/git-development.md` 保持未暂存；提交成功。
+Expected: 暂存区只包含 6 个修改文件和 1 个删除文件；`global/rules/git-development.md` 保持未暂存；提交成功。
