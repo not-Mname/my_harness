@@ -2,7 +2,7 @@
 
 ## 背景
 
-本机当前通过本地 marketplace `superpowers-dev` 启用了插件
+迁移前，本机通过本地 marketplace `superpowers-dev` 启用了插件
 `superpowers@superpowers-dev`。其源码位于
 `~/.codex/plugins/local/superpowers-dev`，包含一个没有远端备份的本地提交。
 
@@ -53,9 +53,14 @@ Developer Tools 分类。
 
 ## 异常与回滚
 
-当前 `codex plugin list` 会被两个损坏的 OpenAI marketplace 快照阻断。迁移首先尝试
+迁移验证时，`codex plugin list` 曾被两个损坏的 OpenAI marketplace 显式注册阻断。迁移首先尝试
 正常的插件 CLI 操作；如果相同问题阻断卸载或安装，则停止迁移并发布新的 HITL
 checkpoint，不自行删除或修改这两个无关 marketplace 配置。
+
+迁移完成后另经 `[CP-6]` 授权，仅使用 Codex CLI 移除两个损坏的显式注册。CLI 拒绝从
+本地目录添加保留名称 `openai-curated`，但会自动提供内置 `openai-api-curated`；因此无需
+回滚损坏配置。最终 marketplace 与 plugin 清单均可正常加载，且用户配置中不保留上述
+两个显式 marketplace 配置块。
 
 官方插件校验脚本当前因全局 Python 缺少 `PyYAML` 无法运行。不会擅自安装依赖；优先
 使用现有运行时或结构化解析完成等价校验。若完整验证确实需要安装依赖，则另行确认。
@@ -70,6 +75,7 @@ checkpoint，不自行删除或修改这两个无关 marketplace 配置。
   `superpowers@superpowers-dev`。
 - 新版 manifest 和 marketplace 清单可被结构化解析，插件校验无已知错误。
 - 中文版全部 Skills 可被枚举，关键 `SKILL.md` frontmatter 合法。
-- SessionStart Hook 可执行，并输出 `using-superpowers` 的中文注入内容。
+- SessionStart Hook 可执行，在 Codex CLI `/hooks` 中为 `Trusted`，并输出
+  `using-superpowers` 的中文注入内容。
 - 独立的 `writing-contextual-code-comments` Skill 仍存在。
-- 新任务能够发现中文版 Skills；旧插件源码仍可用于回滚。
+- 新任务能够发现 `superpowers-zh:*` Skills 并收到中文 SessionStart 注入；旧插件源码仍可用于回滚。
