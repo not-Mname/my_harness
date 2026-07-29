@@ -254,18 +254,43 @@ codex plugin add superpowers-zh@superpowers-zh-dev --json
 
 预期：JSON 表示 `superpowers-zh@superpowers-zh-dev` 安装并启用成功。
 
-- [x] **Step 6：确认切换中断回滚条件（未触发）**
+- [x] **Step 6：定义并核对两种切换中断回滚分支（本次均未触发）**
 
-仅当 Step 3 已完成且 Step 4 或 Step 5 失败时执行：
+**分支 A：Step 2 成功，但 Step 3 失败，且旧 marketplace 仍存在。**
+
+先只读确认 `[marketplaces.superpowers-dev]` 尚未被移除，再直接恢复旧插件；不得重复添加
+仍存在的 marketplace：
+
+```bash
+ruby -EUTF-8:UTF-8 -e 't=File.read("/Users/edy/.codex/config.toml"); abort "old marketplace missing" unless t.include?("[marketplaces.superpowers-dev]")'
+codex plugin add superpowers@superpowers-dev --json
+codex plugin list
+ruby -EUTF-8:UTF-8 -e 't=File.read("/Users/edy/.codex/config.toml"); abort "old marketplace missing" unless t.include?("[marketplaces.superpowers-dev]"); abort "old plugin missing" unless t.include?(%q{[plugins."superpowers@superpowers-dev"]}); abort "new plugin unexpectedly enabled" if t.include?(%q{[plugins."superpowers-zh@superpowers-zh-dev"]})'
+test -d /Users/edy/.codex/plugins/local/superpowers-dev
+```
+
+预期：旧 marketplace 保持注册，`superpowers@superpowers-dev` 恢复为已启用；
+`codex plugin list`、配置断言和旧源码目录检查均退出 `0`。如果恢复命令也失败，记录 Step 3
+及恢复命令的原始错误并停止，不继续重试。
+
+**分支 B：Step 3 已成功，但 Step 4 或 Step 5 失败。**
+
+旧 marketplace 已不存在，因此先重新注册保留的旧源码，再恢复旧插件：
 
 ```bash
 codex plugin marketplace add /Users/edy/.codex/plugins/local/superpowers-dev --json
 codex plugin add superpowers@superpowers-dev --json
+codex plugin list
+ruby -EUTF-8:UTF-8 -e 't=File.read("/Users/edy/.codex/config.toml"); abort "old marketplace missing" unless t.include?("[marketplaces.superpowers-dev]"); abort "old plugin missing" unless t.include?(%q{[plugins."superpowers@superpowers-dev"]}); abort "new plugin unexpectedly enabled" if t.include?(%q{[plugins."superpowers-zh@superpowers-zh-dev"]})'
+test -d /Users/edy/.codex/plugins/local/superpowers-dev
 ```
 
-预期：旧 marketplace 和旧插件恢复启用。报告新版失败命令及原始错误，不继续重试。
+预期：旧 marketplace 和旧插件恢复启用；`codex plugin list`、配置断言和旧源码目录检查均
+退出 `0`。报告新版失败命令及原始错误；如果恢复失败，同时报告恢复命令原始错误并停止，
+不继续重试。
 
-实际：Step 4 和 Step 5 均成功，回滚条件未触发；旧源码继续作为回滚副本保留。
+实际：本次 Step 3、Step 4 和 Step 5 均成功，两条回滚分支均未触发；checkbox 表示分支已
+定义并核对，不表示执行过恢复命令。旧源码继续作为回滚副本保留。
 
 ### Task 3：验证全局插件状态
 
