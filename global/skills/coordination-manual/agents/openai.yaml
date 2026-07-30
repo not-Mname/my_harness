@@ -1,0 +1,6 @@
+interface:
+  display_name: "人工多会话协调"
+  short_description: "将当前会话绑定为人工协调下的客户端、服务端、测试或集成角色"
+  default_prompt: "使用 $coordination-manual role=client root=/Projects/MMORPG 加入当前任务。"
+policy:
+  allow_implicit_invocation: false
