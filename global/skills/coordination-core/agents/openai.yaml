@@ -1,0 +1,6 @@
+interface:
+  display_name: "跨角色协调协议"
+  short_description: "定义任务目录、契约版本、角色所有权和跨会话交接协议"
+  default_prompt: "使用 $coordination-core 检查当前跨角色任务的协议和状态。"
+policy:
+  allow_implicit_invocation: false
