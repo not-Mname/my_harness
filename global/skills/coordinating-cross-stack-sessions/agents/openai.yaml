@@ -1,4 +1,0 @@
-interface:
-  display_name: "跨端多会话协调"
-  short_description: "为客户端、服务端和测试会话生成契约一致的自包含提示词"
-  default_prompt: "使用 $coordinating-cross-stack-sessions 为当前跨端需求生成客户端、服务端和测试会话提示词。"
