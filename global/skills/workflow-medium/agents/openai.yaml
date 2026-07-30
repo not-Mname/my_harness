@@ -1,0 +1,7 @@
+interface:
+  display_name: "持续中量级流程"
+  short_description: "将当前对话锁定为速度与质量平衡的中量级流程预算"
+  default_prompt: "使用 $workflow-medium 将当前对话持续锁定为中量级流程。"
+
+policy:
+  allow_implicit_invocation: false

@@ -1,7 +1,0 @@
-interface:
-  display_name: "持续完整流程"
-  short_description: "将当前 Codex 对话持续切换为完整流程，直到再次切换模式"
-  default_prompt: "使用 $workflow-full 将当前对话持续切换为完整流程。"
-
-policy:
-  allow_implicit_invocation: true
