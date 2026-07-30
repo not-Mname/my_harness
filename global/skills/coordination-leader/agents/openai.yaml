@@ -1,0 +1,6 @@
+interface:
+  display_name: "Leader 子代理协调"
+  short_description: "由当前主 Agent 统筹契约、派发角色子代理并汇总验证"
+  default_prompt: "使用 $coordination-leader action=resume root=/Projects/MMORPG 恢复当前任务。"
+policy:
+  allow_implicit_invocation: false
