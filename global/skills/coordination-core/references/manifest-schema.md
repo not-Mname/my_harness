@@ -1,6 +1,6 @@
 # Manifest Schema
 
-`manifest.yaml` 由当前协调者创建和更新。所有字段必填；更新时保留任务已消耗的 Workflow 预算语义。
+`manifest.yaml` 由当前协调者创建和更新。顶层结构始终完整；契约尚未发布时，发布后才有值的字段按下述生命周期使用 `null`。更新时保留任务已消耗的 Workflow 预算语义。
 
 ```yaml
 schema_version: 1
@@ -52,7 +52,7 @@ updated_at: 2026-07-30T12:00:00+08:00
 - `coordination_mode`：必填，只能为 `manual-sessions` 或 `leader-subagents`。
 - `coordinator.type`：必填，只能为 `human` 或 `primary-agent`；`identifier` 必填且能标识当前协调者。
 - `project_root`：必填，已验证的规范化绝对路径。
-- `contract.source`：必填正式契约绝对路径；`version` 匹配 `^v[0-9]{3}$`；`sha256` 为对应快照的 64 位小写十六进制摘要。
+- `contract.source`：从 `draft` 起必填正式契约绝对路径。`draft`、`contract-review` 阶段的 `version` 和 `sha256` 必须为 `null`；发布快照后，`version` 匹配 `^v[0-9]{3}$`，`sha256` 为对应快照的 64 位小写十六进制摘要。任务进入 `ready` 前两者必须已有非空合法值。
 - `workflow.mode`：必填，值来自当前 Workflow；`effective_budget` 是当前任务的消费结果；`budget_scope` 固定为 `task`。
 - `roles`：`client`、`server`、`test` 均必填；每项的 `workspace`、`rules`、`writable` 使用绝对路径，规则和可写路径不得靠聊天补充。
 - `updated_at`：必填 RFC 3339 时间，由协调者在每次 Manifest 修改时更新。

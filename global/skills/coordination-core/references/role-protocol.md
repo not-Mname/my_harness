@@ -31,6 +31,35 @@ updated_at: 2026-07-30T12:00:00+08:00
 - 恢复者复用任务状态但创建自己的新 `binding_id`；必须重新读取 Manifest、正式契约、当前快照、角色状态、未决 blocker 和旧 handoff。
 - 绑定、释放或恢复均须在写入前后核对 `contracts/current`。
 
+初始化时，协调者为每个业务角色创建尚未绑定的状态：
+
+```yaml
+task_id: rename-character
+role: client
+executor_mode: null
+binding_id: null
+state: unassigned
+contract_version: null
+updated_at: 2026-07-30T12:00:00+08:00
+```
+
+契约达到 `ready` 后，协调者为每个角色创建 `assignment.md`。它至少包含 `task_id`、`role`、绝对 `workspace`、逐项绝对规则路径、正式契约与快照绝对路径、契约版本和哈希、依赖摘要、可写与只读绝对路径、验收条件、验证命令或发现步骤，以及 handoff 绝对路径。assignment 不保存活跃 `binding_id`，角色执行者不得修改它。
+
+`integration` 会话不占用业务角色，其绑定持久化在 `integration/status.yaml`，由当前协调者维护。初始化期间允许它在 `draft` 状态以 `contract_version: null` 活跃；正式契约发布后，协调者在同一绑定上更新为当前版本，再将任务置为 `ready`：
+
+```yaml
+schema_version: 1
+task_id: rename-character
+role: integration
+executor_mode: manual-session
+binding_id: integration-session-01
+state: active
+contract_version: v001
+updated_at: 2026-07-30T12:00:00+08:00
+```
+
+Leader 模式将 `executor_mode` 写为 `leader-subagent`，`binding_id` 标识当前主 Agent。`integration/status.yaml` 不授予任何业务角色写入权，也不能绕过业务角色的独占绑定。
+
 ## Blocker
 
 文件名为 `roles/<role>/blockers/<role>-<sequence>.yaml`。序号单调递增；文件不删除，`status` 只能为 `open`、`resolved` 或 `rejected`。

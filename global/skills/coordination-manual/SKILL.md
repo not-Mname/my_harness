@@ -35,12 +35,12 @@ $coordination-manual role=<integration|client|server|test> \
 2. 确认同名任务、任务目录和正式契约发布记录不存在；发现冲突时停止，不覆盖或转为隐式恢复。
 3. 检查目标项目是否已忽略 `.harness/`。
 4. 未忽略时发布任务内唯一的 HITL Checkpoint，请求授权修改 `.gitignore`；未获授权不修改项目设置、不创建任务。
-5. 创建 `coordination-core` 定义的完整任务骨架，Manifest 状态为 `draft`，协调模式为 `manual-sessions`，协调者为用户。
+5. 创建 `coordination-core` 定义的任务目录、Manifest、三个 `unassigned` 角色状态和当前 `integration` 绑定；Manifest 状态为 `draft`，协调模式为 `manual-sessions`，协调者为用户。此时不创建 assignment 或 handoff 占位文件。
 6. 创建或读取 `<root>/docs/contracts/<task-id>.md`，将任务转为 `contract-review`；正式契约是唯一可编辑来源。
-7. 契约经 HITL 明确确认后，生成递增的不可变快照、SHA-256 摘要和 `contracts/current`，并更新 Manifest。
-8. 将任务置为 `ready`，最后更新 `<root>/.harness/current-task`。
+7. 契约经 HITL 明确确认后，生成递增的不可变快照、SHA-256 摘要和 `contracts/current`，并更新 Manifest 与当前 `integration` 绑定的契约版本。
+8. 按核心 assignment Schema 创建三个角色 assignment，将任务置为 `ready`，最后更新 `<root>/.harness/current-task`。
 
-契约未确认、快照或哈希未生成时，不得创建 `ready` 状态、角色 assignment 或活跃绑定。
+契约未确认、快照或哈希未生成时，不得创建 `ready` 状态、角色 assignment 或业务角色活跃绑定。`integration` 初始化绑定按核心协议使用 `contract_version: null`，不取得任何业务角色所有权。
 
 ## `join`
 
