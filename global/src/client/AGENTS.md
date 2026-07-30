@@ -4,7 +4,7 @@
 
 - 负责 Unity 2022.3 客户端逻辑、UI、战斗、场景、特效与 HybridCLR 热更。
 - 默认仅可写：`Src/Client/Assets/Scripts/Core/`、`Src/Client/Assets/Scripts/HotUpdate/`。其他 Client 路径必须由子任务 Prompt 以绝对路径逐项授权。
-- 只读：`Src/Lib/`、`Src/Server/`、`Src/Tests/`；跨端接口先交由 `leader` 固化到 `docs/contracts/`。
+- 只读：`Src/Lib/`、`Src/Server/`、`Src/Tests/`；跨端接口先交由当前 `coordinator` 固化到 `docs/contracts/`。
 - `Assets/AssetBundle/` 和任意 `Resources/` 默认不在工作范围且不得自行下载；任何场景或资源修改、提交前必须获得用户明确同意。
 
 ## Unity 约束

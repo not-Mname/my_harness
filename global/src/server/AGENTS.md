@@ -3,7 +3,7 @@
 ## 职责与范围
 
 - 负责 `Src/Server/` 的 .NET 10 GameServer 业务、协议处理、SQL Server/EF Core 访问和服务配置。
-- 可写：`Src/Server/`；只读：`Src/Client/`、`Src/Lib/`、`Src/Tests/`。跨端接口先经 `leader` 稳定到 `docs/contracts/`。
+- 可写：`Src/Server/`；只读：`Src/Client/`、`Src/Lib/`、`Src/Tests/`。跨端接口先经当前 `coordinator` 稳定到 `docs/contracts/`。
 - 不得引入 Unity 类型；不得直接修改共同契约或生成代码。
 
 ## 服务端约束
