@@ -13,3 +13,7 @@ Cocos Creator 使用 `funplay_cocos`，Unity 使用 `unityMCP`。操作引擎时
 - 不得仅为采用默认计算体系而要求把 anchor 改为 `(0.5,0.5)`；用户明确授权修改 anchor 时，才可按授权范围执行。
 
 MCP 不可用时遵循全局 Capability Recovery。不得擅自启停编辑器、运行 Cocos 项目或让 Unity 进入 Play Mode；恢复失败后回退到文件只读分析，并报告已尝试操作、失败原因、影响和降级方案。
+
+## 能力恢复
+
+- MCP、Skill 或 Plugin 不可用时，确认应否存在，并区分未暴露/deferred、连接、配置、认证、依赖或运行时问题。同一任务、同一能力的安全恢复由主 Agent 统一执行和记录，所有 Agent 合计最多一次：可 discovery/load deferred tool、重连/刷新、只读检查配置和服务。安装依赖、改配置、登录、启停服务/编辑器或改项目，须先获同意。失败后报告尝试、原因、影响和降级方案，不循环重试。
