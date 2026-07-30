@@ -25,7 +25,7 @@ $coordination-leader [action=<init|resume>] \
 
 `init` 按 `coordination-core` 创建任务骨架、正式契约、不可变快照和 Manifest。目标项目未忽略 `.harness/` 或正式契约需要确认时，先发布 HITL；契约未冻结不得把任务置为 `ready` 或派发角色。
 
-`resume` 不重新初始化。依次读取 Manifest、正式契约、当前快照、全部角色状态、未决 blocker、已有 handoff、集成状态和 Workflow 消费记录。
+`resume` 不重新初始化。依次读取 Manifest、正式契约、当前快照、全部角色状态、未决 blocker、已有 handoff、集成状态和 Manifest 指向的 Workflow 消费账本；按核心 Schema 校验并重算累计消费。
 
 ## 模式与所有权门禁
 
@@ -39,7 +39,7 @@ $coordination-leader [action=<init|resume>] \
 
 1. 开始任务时读取当前 Workflow Skill 和 `global/rules/workflow-policy.md`。
 2. Workflow 为 `auto` 时，在当前任务开始时确定有效预算；固定模式直接消费其预算。
-3. 已完成、失败、中断和返工 Agent 均计入本任务累计派发；恢复和协调模式切换不清零。
+3. 每次派发前先按 `coordination-core` 追加 Workflow 计数事件；已完成、失败、中断和返工 Agent 均计入本任务累计派发，结果事件不撤销原计数；恢复和协调模式切换不清零。
 4. 派发时冻结 Agent 的只读或可读写身份；只读 Agent 不得升级为可读写 Agent。
 5. 生成或更新计划、失败分组，以及每次派发前，重新构建依赖层并检查剩余预算和平台并发。
 6. 本 Skill 不复制数值配额、不创建预算例外；用户显式 Skill 覆盖、自动升级和固定模式残余风险完全服从 `workflow-policy.md`。

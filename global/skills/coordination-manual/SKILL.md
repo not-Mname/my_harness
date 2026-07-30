@@ -49,10 +49,10 @@ $coordination-manual role=<integration|client|server|test> \
 1. 解析显式 `task`，否则读取并校验 `<root>/.harness/current-task`。
 2. 读取 Manifest、正式契约、`contracts/current`、当前不可变快照，以及目标角色 assignment；`integration` 另读取集成状态。
 3. 完整读取 Manifest `rules` 中列出的项目祖先链规则和显式角色 `AGENTS.md`；显式规则不因不在工作区祖先链而忽略。
-4. 检查任务可实施状态、角色状态、现有 `binding_id` 和 `executor_mode`。已有 `manual-session` 或 `leader-subagent` 活跃绑定时拒绝抢占，返回用户协调；不得自行释放旧绑定。
-5. 创建当前会话唯一 `binding_id`，将目标角色写为 `active`，`executor_mode` 写为 `manual-session`，并记录当前契约版本。
+4. 检查任务可实施状态、Manifest `coordination_mode`、全部角色状态，以及目标绑定。只有 `coordination_mode: manual-sessions` 才能继续普通 join；发现任一 `leader-subagent` 为 `active`、`blocked` 或 `contract-changed` 时拒绝整任务混合执行。普通角色不得自行切换模式；只有 `integration` 可在全部角色满足核心切换状态且用户明确决定后更新协调模式。目标已有活跃绑定时拒绝抢占，返回用户协调；不得自行释放旧绑定。
+5. 创建当前会话唯一 `binding_id`。普通角色将自身状态写为 `active`、`executor_mode: manual-session` 并记录当前契约版本；`integration` 只更新 `integration/status.yaml`，不得占用业务角色。
 6. 状态写入前后读取 `contracts/current`；版本变化时进入 `contract-changed`，停止相关写入并按核心恢复协议重新评估。
-7. 只在 Manifest 授权的角色业务路径和自身运行目录中工作；正式契约、共享状态、其他角色目录和 `integration/` 只读。
+7. 按角色应用权限：`client/server/test` 只在 Manifest 授权的业务路径和自身运行目录中工作，正式契约、共享状态、其他角色目录和 `integration/` 只读；`integration` 按核心写入矩阵维护正式契约、Manifest、快照、assignment 和 `integration/**`，但所有业务角色路径及其 handoff、blocker 只读。
 
 恢复不得依赖聊天历史。必须读取未决 blocker 和旧 handoff。遇到契约缺口、越界需求、数据或安全决策、外部副作用或项目设置变更时，在自身目录写 blocker，停止受影响工作并交回用户协调。
 
