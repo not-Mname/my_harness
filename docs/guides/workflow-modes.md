@@ -250,3 +250,17 @@ $workflow-medium 实现用户资料编辑功能
 ```text
 $workflow-heavy 重构鉴权模块，并完整执行 TDD 和代码评审
 ```
+
+## 技能裁剪
+
+不同档位会裁剪适用的 Superpowers 技能，避免“1% 必须调用”机制拖慢轻量级任务：
+
+| 技能 | 轻量级 | 中量级 | 重量级 |
+|---|---|---|---|
+| brainstorming | 压缩为必要澄清+简短方案确认，不写 spec | 合并澄清+关键设计确认，spec 可选 | 完整流程+spec |
+| test-driven-development | 不强制，测试轮给最高信息量验证 | 高风险逻辑优先 | 完整 TDD |
+| using-git-worktrees | 默认禁止，须 HITL 授权 | 须 HITL 授权 | 须 HITL 授权 |
+| dispatching-parallel-agents | 一般不派发，受配额约束 | 满足独立条件才并行 | 满足独立条件才并行 |
+| subagent-driven-development | — | 按需，串行实现+评审 | 按需 |
+
+路由与完整裁剪表见 `global/skills/using-superpowers/SKILL.md`；harness 裁剪版技能位于 `global/skills/` 对应目录，与插件原版并存，冲突时以裁剪版为准。
