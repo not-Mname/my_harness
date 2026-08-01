@@ -8,6 +8,8 @@
 
 **技术栈：** Markdown skills（SKILL.md frontmatter），无代码。
 
+> **执行变更（2026-08-01）：** 原方案（harness 副本 + 路由）已按用户决策调整为**直接修改 superpowers-zh 插件技能**，并在 ~/.agents/skills/superpowers 建立版本库归档历史（基线 dede6f3、裁剪版 5bb94ad）。global/skills/ 下的 6 个 harness 副本已移除，插件成为唯一技能来源。
+
 ---
 
 ## 文件结构

@@ -263,4 +263,4 @@ $workflow-heavy 重构鉴权模块，并完整执行 TDD 和代码评审
 | dispatching-parallel-agents | 一般不派发，受配额约束 | 满足独立条件才并行 | 满足独立条件才并行 |
 | subagent-driven-development | — | 按需，串行实现+评审 | 按需 |
 
-路由与完整裁剪表见 `global/skills/using-superpowers/SKILL.md`；harness 裁剪版技能位于 `global/skills/` 对应目录，与插件原版并存，冲突时以裁剪版为准。
+路由与完整裁剪表见 superpowers-zh 插件的 `using-superpowers`（`~/.codex/plugins/local/superpowers-zh/skills/using-superpowers/SKILL.md`）；裁剪后的技能直接位于插件 `skills/` 目录，历史版本归档于 `~/.agents/skills/superpowers` 版本库。
