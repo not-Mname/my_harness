@@ -251,9 +251,9 @@ $workflow-medium 实现用户资料编辑功能
 $workflow-heavy 重构鉴权模块，并完整执行 TDD 和代码评审
 ```
 
-## 技能裁剪
+## 技能分级适配
 
-不同档位会裁剪适用的 Superpowers 技能，避免“1% 必须调用”机制拖慢轻量级任务：
+不同档位会分级适配适用的 Superpowers 技能，避免“1% 必须调用”机制拖慢轻量级任务：
 
 | 技能 | 轻量级 | 中量级 | 重量级 |
 |---|---|---|---|
@@ -263,4 +263,4 @@ $workflow-heavy 重构鉴权模块，并完整执行 TDD 和代码评审
 | dispatching-parallel-agents | 一般不派发，受配额约束 | 满足独立条件才并行 | 满足独立条件才并行 |
 | subagent-driven-development | — | 按需，串行实现+评审 | 按需 |
 
-路由与完整裁剪表见 superpowers-zh 插件的 `using-superpowers`（`~/.codex/plugins/local/superpowers-zh/skills/using-superpowers/SKILL.md`）；裁剪后的技能直接位于插件 `skills/` 目录，历史版本归档于 `~/.agents/skills/superpowers` 版本库。
+路由与完整裁剪表见 superpowers-zh 插件的 `using-superpowers`（`~/.codex/plugins/local/superpowers-zh/skills/using-superpowers/SKILL.md`）；分级适配后的技能直接位于插件 `skills/` 目录，历史版本归档于 `~/.agents/skills/superpowers` 版本库。
