@@ -18,12 +18,20 @@ $coordination-manual role=<integration|client|server|test> \
   [action=<init|join>] root=<absolute-path> [task=<task-id>]
 ```
 
-- `role`、`root` 始终必填；缺失时停止，不从旧会话绑定、聊天或当前目录继承。
+- `role`、`root` 始终必填；任一缺失或非法时，主动询问并一次列出全部缺项，不从旧会话绑定、聊天或当前目录继承。
 - `action` 可选，默认 `join`。
 - 合法组合：`integration + init`、`integration + join`、`client + join`、`server + join`、`test + join`。
 - `client/server/test + init` 非法，立即拒绝且不创建目录。
-- `init` 必须显式提供合法 `task`。
-- `join` 的 `task` 可选；省略时只读取 `<root>/.harness/current-task`。指针缺失、非法或悬空时停止，不猜测任务。
+- `init` 必须显式提供合法 `task`；缺失时主动询问 `task=<task-id>`。
+- `join` 的 `task` 可选；省略时只读取 `<root>/.harness/current-task`。指针缺失、非法或悬空时主动询问 `task=<task-id>`，不猜测任务。
+- `action` 缺失时使用 `join`；值非法时主动询问 `action=init` 或 `action=join`。
+
+缺参询问示例：
+
+```text
+为了加入协调任务，还需要：role（integration/client/server/test）、root（已存在的绝对项目路径）。
+当前 action 未提供，将按 join 处理；请补充缺失参数后继续。
+```
 
 调用成功后，模式、角色、项目、任务和 `binding_id` 在当前会话持续生效；新对话复位。再次显式调用本 Skill 才能重新绑定。切换角色、项目或任务时，先报告旧绑定与拟定新绑定，再按 `coordination-core` 校验所有权；不能沿用旧 `role` 或 `root` 补齐参数。
 
@@ -46,7 +54,7 @@ $coordination-manual role=<integration|client|server|test> \
 
 `integration` 或普通角色均按以下顺序加入：
 
-1. 解析显式 `task`，否则读取并校验 `<root>/.harness/current-task`。
+1. 解析显式 `task`，否则读取并校验 `<root>/.harness/current-task`；指针无法解析时主动询问显式 `task`。
 2. 读取 Manifest、正式契约、`contracts/current`、当前不可变快照，以及目标角色 assignment；`integration` 另读取集成状态。
 3. 完整读取 Manifest `rules` 中列出的项目祖先链规则和显式角色 `AGENTS.md`；显式规则不因不在工作区祖先链而忽略。
 4. 检查任务可实施状态、Manifest `coordination_mode`、全部角色状态，以及目标绑定。只有 `coordination_mode: manual-sessions` 才能继续普通 join；发现任一 `leader-subagent` 为 `active`、`blocked` 或 `contract-changed` 时拒绝整任务混合执行。普通角色不得自行切换模式；只有 `integration` 可在全部角色满足核心切换状态且用户明确决定后更新协调模式。目标已有活跃绑定时拒绝抢占，返回用户协调；不得自行释放旧绑定。

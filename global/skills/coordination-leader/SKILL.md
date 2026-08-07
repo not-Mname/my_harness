@@ -18,10 +18,18 @@ $coordination-leader [action=<init|resume>] \
   root=<absolute-path> [task=<task-id>]
 ```
 
-- `root` 始终必填，必须是已存在、规范化后的绝对路径。
+- `root` 始终必填；缺失或非法时主动询问有效的绝对项目路径，不从当前目录或旧绑定继承。
 - 提供 `task` 且省略 `action` 时默认 `init`；未提供 `task` 时默认 `resume`。
-- `init` 必须显式提供合法 `task`。
-- `resume` 可显式提供 `task`；省略时只读取 `<root>/.harness/current-task`，不得从聊天、分支、目录或时间猜测。
+- `init` 必须显式提供合法 `task`；缺失时主动询问 `task=<task-id>`。
+- `resume` 可显式提供 `task`；省略时只读取 `<root>/.harness/current-task`，指针缺失、非法或悬空时主动询问 `task=<task-id>`，不得从聊天、分支、目录或时间猜测。
+- `action` 非 `init` 或 `resume` 时主动询问合法 action；action 缺失时按上面的 task 规则决定默认 resume 或 init。
+
+缺参询问示例：
+
+```text
+为了恢复 Leader 任务，还需要：root（已存在的绝对项目路径）。
+未提供 action，将按 resume 处理；如果不使用 current-task，请同时提供 task=<task-id>。
+```
 
 `init` 按 `coordination-core` 创建任务骨架、正式契约、不可变快照和 Manifest。目标项目未忽略 `.harness/` 或正式契约需要确认时，先发布 HITL；契约未冻结不得把任务置为 `ready` 或派发角色。
 

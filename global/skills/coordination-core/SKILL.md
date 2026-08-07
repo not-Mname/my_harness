@@ -28,3 +28,9 @@ description: Use when manual Codex sessions or a leader Agent need a shared cros
 - 每次写入前后核对当前契约版本。
 - Workflow 预算由当前模式和 `global/rules/workflow-policy.md` 定义，本 Skill 不复制配额。
 - `.harness/` 未被目标项目忽略时，按 HITL 请求授权，不自行修改 `.gitignore`。
+
+## 参数解析门
+
+- 发现必填参数缺失、参数值非法或任务指针无法解析时，主动向用户询问，不直接结束，也不从旧会话、聊天历史、当前目录、分支名或时间推断。
+- 同一轮合并询问所有已发现的缺项，并列出允许值、当前已知值和缺失值。
+- 参数得到补充后重新执行完整解析和路径/所有权校验；用户未补充前不创建目录、不绑定角色、不派发 Agent。
